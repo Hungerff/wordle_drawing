@@ -3,156 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Wordle Drawing Helper</title>
+
+<meta property="og:title" content="Wordle Drawing Helper">
+<meta property="og:description" content="Draw Wordle cube patterns and find words that can make it">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mostevilsite.com/">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Wordle Drawing Helper">
+<meta name="twitter:description" content="Draw Wordle color patterns and find matching words.">
+
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: #121213;
-    color: #fff;
-    text-align: center;
-    padding: 40px 20px;
-  }
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    color: #ffffff;
-  }
-  #targetWord {
-    font-size: 1.5rem;
-    text-transform: uppercase;
-    text-align: center;
-    width: 150px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 2px solid #333;
-    background-color: #1a1a1a;
-    color: #fff;
-    margin-bottom: 30px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(5, 60px);
-    grid-template-rows: 60px;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 15px;
-  }
-  .cell {
-    width: 60px;
-    height: 60px;
-    border-radius: 5px;
-    border: 2px solid #3a3a3c;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.2s ease;
-    font-weight: 600;
-  }
-  .gray { background-color: #3a3a3c; color: #fff; }
-  .yellow { background-color: #b59f3b; color: #fff; }
-  .green { background-color: #538d4e; color: #fff; }
-  button {
-    background-color: #538d4e;
-    color: #fff;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1.2rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    margin-top: 10px;
-  }
-  button:hover {
-    background-color: #6aaa64;
-  }
-  #results {
-    margin-top: 30px;
-    font-size: 1.2rem;
-    background-color: #1a1a1a;
-    padding: 20px;
-    border-radius: 10px;
-    display: inline-block;
-    max-width: 90%;
-    word-wrap: break-word;
-    border: 2px solid #333;
-  }
-  @media(max-width: 500px){
-    .grid { grid-template-columns: repeat(5, 45px); grid-template-rows: 45px; gap: 8px; }
-    .cell { width: 45px; height: 45px; font-size: 20px; }
-    #targetWord { width: 120px; font-size: 1.2rem; }
-    button { font-size: 1rem; padding: 10px 20px; }
-  }
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #121213;
+  color: #fff;
+  text-align: center;
+  padding: 40px 20px;
+}
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+#targetWord {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  text-align: center;
+  width: 150px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #333;
+  background-color: #1a1a1a;
+  color: #fff;
+  margin-bottom: 30px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 60px);
+  grid-template-rows: 60px;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+.cell {
+  width: 60px;
+  height: 60px;
+  border-radius: 5px;
+  border: 2px solid #3a3a3c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+.gray { background-color: #3a3a3c; }
+.yellow { background-color: #b59f3b; }
+.green { background-color: #538d4e; }
+button {
+  background-color: #538d4e;
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+}
+#results {
+  margin-top: 30px;
+  font-size: 1.2rem;
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-radius: 10px;
+  display: inline-block;
+  max-width: 90%;
+  border: 2px solid #333;
+}
 </style>
 </head>
+
 <body>
 <h1>Wordle Drawing Helper</h1>
-<input type="text" id="targetWord" maxlength="5" placeholder="Type" />
+<input type="text" id="targetWord" maxlength="5" placeholder="Type">
 <div id="grids"></div>
 <button onclick="findWords()">Find Words</button>
 <div id="results"></div>
 
 <script>
-const maxRows = 6;
-const gridContainer = document.getElementById('grids');
-let grids = [];
-let validWords = [];
+const maxRows = 6
+const gridContainer = document.getElementById('grids')
+let grids = []
+let validWords = []
 
 fetch('https://gist.githubusercontent.com/dracos/dd0668f281e685bad51479e5acaadb93/raw/6bfa15d263d6d5b63840a8e5b64e04b382fdb079/valid-wordle-words.txt')
-  .then(res => res.text())
-  .then(text => { validWords = text.split('\n').map(w => w.toUpperCase()); });
+  .then(r => r.text())
+  .then(t => validWords = t.split('\n').map(w => w.toUpperCase()))
 
 for (let r = 0; r < maxRows; r++) {
-  const rowDiv = document.createElement('div');
-  rowDiv.className = 'grid';
-  let cells = [];
+  const row = document.createElement('div')
+  row.className = 'grid'
+  let cells = []
   for (let c = 0; c < 5; c++) {
-    const cell = document.createElement('div');
-    cell.className = 'cell gray';
-    cell.dataset.color = 'gray';
-    cell.addEventListener('click', () => {
-      if(cell.dataset.color === 'gray') { cell.dataset.color = 'yellow'; cell.className = 'cell yellow'; }
-      else if(cell.dataset.color === 'yellow') { cell.dataset.color = 'green'; cell.className = 'cell green'; }
-      else { cell.dataset.color = 'gray'; cell.className = 'cell gray'; }
-    });
-    rowDiv.appendChild(cell);
-    cells.push(cell);
+    const cell = document.createElement('div')
+    cell.className = 'cell gray'
+    cell.dataset.color = 'gray'
+    cell.onclick = () => {
+      cell.dataset.color =
+        cell.dataset.color === 'gray' ? 'yellow' :
+        cell.dataset.color === 'yellow' ? 'green' : 'gray'
+      cell.className = `cell ${cell.dataset.color}`
+    }
+    row.appendChild(cell)
+    cells.push(cell)
   }
-  grids.push(cells);
-  gridContainer.appendChild(rowDiv);
+  grids.push(cells)
+  gridContainer.appendChild(row)
 }
 
 function computePattern(guess, target) {
-  let pattern = Array(5).fill('gray');
-  let targetLetters = target.split('');
+  let p = Array(5).fill('gray')
+  let t = target.split('')
   for (let i = 0; i < 5; i++) {
-    if (guess[i] === target[i]) { pattern[i] = 'green'; targetLetters[i] = null; }
-  }
-  for (let i = 0; i < 5; i++) {
-    if (pattern[i] === 'gray') {
-      const idx = targetLetters.indexOf(guess[i]);
-      if (idx !== -1) { pattern[i] = 'yellow'; targetLetters[idx] = null; }
+    if (guess[i] === target[i]) {
+      p[i] = 'green'
+      t[i] = null
     }
   }
-  return pattern;
+  for (let i = 0; i < 5; i++) {
+    if (p[i] === 'gray') {
+      const idx = t.indexOf(guess[i])
+      if (idx !== -1) {
+        p[i] = 'yellow'
+        t[idx] = null
+      }
+    }
+  }
+  return p
 }
 
 function findWords() {
-  const targetWord = document.getElementById('targetWord').value.toUpperCase();
-  if(targetWord.length !== 5) { alert('Please enter a 5-letter target word.'); return; }
-
-  let results = [];
-  grids.forEach((row, rowIndex) => {
-    const pattern = row.map(c => c.dataset.color);
-    const matches = validWords.filter(word => computePattern(word, targetWord).join() === pattern.join());
-    results.push(matches.length ? matches.slice(0,10).join(', ') : 'Impossible');
-  });
-
-  document.getElementById('results').innerHTML = results.map((r,i)=>`Row ${i+1}: ${r}`).join('<br>');
+  const target = document.getElementById('targetWord').value.toUpperCase()
+  if (target.length !== 5) return
+  const out = grids.map((row, i) => {
+    const pat = row.map(c => c.dataset.color).join()
+    const m = validWords.filter(w => computePattern(w, target).join() === pat)
+    return `Row ${i+1}: ${m.length ? m.slice(0,10).join(', ') : 'Impossible'}`
+  })
+  document.getElementById('results').innerHTML = out.join('<br>')
 }
 </script>
 </body>
